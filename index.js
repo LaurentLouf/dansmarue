@@ -6,7 +6,7 @@ const puppeteer = require('puppeteer');
   var login = '', password = '' ;
 
   // Launch browser in slow mo, create page with desktop viewport and log console outputs
-  const browser = await puppeteer.launch({slowMo: 1000});
+  const browser = await puppeteer.launch({slowMo: 100});
   const page = await browser.newPage();
   await page.setViewport({width:1920, height:1080}) ;
   page.on('console', msg => console.log('PAGE LOG:', msg.text() ) );
