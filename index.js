@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const path      = require('path') ; 
 const winston   = require('winston') ;
 
 // Create a custom formatter : add a timestamp and pretty print the data
