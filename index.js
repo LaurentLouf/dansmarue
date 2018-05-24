@@ -53,6 +53,13 @@ const puppeteer = require('puppeteer');
     await page.screenshot({path: 'step2.png'});
     await page.click('button[name="action_validate_address"]') ; 
     await promiseStep ; 
+
+    
+    // Third step : just continue to next step
+    promiseStep = page.waitForNavigation({timeout: 10000}) ; 
+    await page.screenshot({path: 'step3.png'});
+    await page.click('button[name="action_validate_doublons"]') ;
+    await promiseStep ;
   }
 
   // Close everything  
