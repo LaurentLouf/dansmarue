@@ -61,42 +61,42 @@ const logger = winston.createLogger(
     await page.goto('https://teleservices.paris.fr/dansmarue/');
     
     // First step : just continue to next step
-    var promiseStep = page.waitForNavigation({timeout: 10000}) ; 
     await page.screenshot({path: 'step1.png'});
+    var promiseStep = page.waitForNavigation({timeout: 10000}) ; 
     await page.click('button[name="action_validate_declaration"]') ;
     await promiseStep ; 
     logger.log('info', 'First step (validate declaration) completed.' ) ;
 
     
     // Second step : fill the address. Use first recommendation from the interface
-    promiseStep = page.waitForNavigation({timeout: 10000}) ;
     await page.focus('#adresse') ; 
     await page.keyboard.type("4 rue Lobau") ;
     // Wait for autocomplete suggestions then click on the first one
     await page.waitForSelector("ul.ui-autocomplete", {visible:true, timeout: 3000}) ;
     await page.click('ul.ui-autocomplete li a') ; 
     await page.screenshot({path: 'step2.png'});
+    promiseStep = page.waitForNavigation({timeout: 10000}) ;
     await page.click('button[name="action_validate_address"]') ; 
     await promiseStep ; 
     logger.log('info', 'Second step (validate address) completed.' ) ;
 
     
     // Third step : just continue to next step
-    promiseStep = page.waitForNavigation({timeout: 10000}) ; 
     await page.screenshot({path: 'step3.png'});
+    promiseStep = page.waitForNavigation({timeout: 10000}) ; 
     await page.click('button[name="action_validate_doublons"]') ;
     await promiseStep ;
     logger.log('info', 'Third step (validate duplicates) completed.' ) ;
 
 
     // Fourth step : indicate reason
-    promiseStep = page.waitForNavigation({timeout: 10000}) ; 
     await page.focus('input[name="typeSignalement"]') ;
     await page.keyboard.type('stationnement gênant') ;
     // Wait for autocomplete suggestions then click on the first one
     await page.waitForSelector("ul.ui-autocomplete", {visible:true, timeout: 3000}) ;
     await page.click('ul.ui-autocomplete li a') ; 
     await page.screenshot({path: 'step4.png'});
+    promiseStep = page.waitForNavigation({timeout: 10000}) ; 
     await page.click('button[name="action_validate_categorie"]') ;
     await promiseStep ;
     logger.log('info', 'Fourth step (validate category) completed.' ) ;
