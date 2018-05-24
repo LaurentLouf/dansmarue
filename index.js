@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const path      = require('path') ; 
+const fs        = require('fs')
 const winston   = require('winston') ;
 
 // Create a custom formatter : add a timestamp and pretty print the data
@@ -63,12 +64,17 @@ const logger = winston.createLogger(
     }
   }
 
-  if ( loggedIn )
+
+  let files = fs.readdirSync( path.relative ( process.cwd(), path.join(__dirname, '/images' ) ) ) ; 
+  let iFile = 0 ; 
+  while ( iFile != files.length )
   {
+    try 
+    {
     await page.goto('https://teleservices.paris.fr/dansmarue/');
     
     // First step : just continue to next step
-    await page.screenshot({path: 'step1.png'});
+    await page.screenshot({path: 'file' + iFile + '-step1.png'});
     await Promise.all([
       page.waitForNavigation({timeout: timeoutLoad}),
       page.click('button[name="action_validate_declaration"]')
@@ -78,11 +84,11 @@ const logger = winston.createLogger(
     
     // Second step : fill the address. Use first recommendation from the interface
     await page.focus('#adresse') ; 
-    await page.keyboard.type("4 rue Lobau", {delay: Math.floor( Math.random()*50 + 25 ) } ) ;
+    await page.keyboard.type( path.parse(files[iFile]).name, {delay: Math.floor( Math.random()*50 + 25 ) } ) ;
     // Wait for autocomplete suggestions then click on the first one
     await page.waitForSelector("ul.ui-autocomplete", {visible:true, timeout: 3000}) ;
     await page.click('ul.ui-autocomplete li a') ; 
-    await page.screenshot({path: 'step2.png'});
+    await page.screenshot({path: 'file' + iFile + '-step2.png'});
     await Promise.all([
       page.waitForNavigation({timeout: timeoutLoad}),
       page.click('button[name="action_validate_address"]')
@@ -91,7 +97,7 @@ const logger = winston.createLogger(
 
     
     // Third step : just continue to next step
-    await page.screenshot({path: 'step3.png'});
+    await page.screenshot({path: 'file' + iFile + '-step3.png'});
     await Promise.all([
       page.waitForNavigation({timeout: timeoutLoad}),
       page.click('button[name="action_validate_doublons"]')
@@ -105,7 +111,7 @@ const logger = winston.createLogger(
     // Wait for autocomplete suggestions then click on the first one
     await page.waitForSelector("ul.ui-autocomplete", {visible:true, timeout: 3000}) ;
     await page.click('ul.ui-autocomplete li a') ; 
-    await page.screenshot({path: 'step4.png'});
+    await page.screenshot({path: 'file' + iFile + '-step4.png'});
     await Promise.all([
       page.waitForNavigation({timeout: timeoutLoad}),
       page.click('button[name="action_validate_categorie"]')
@@ -114,12 +120,12 @@ const logger = winston.createLogger(
 
 
     // Fifth step : upload the photo
-    const filePath  = path.relative(process.cwd(), __dirname + '/images/image.png');
+    const filePath  = path.relative(process.cwd(), path.join(__dirname, 'images', files[iFile]) ) ;
     const input     = await page.$('#photo_ensemble');
     await page.evaluate( () => { $('#photo_ensemble').click(); } ) ; 
     await input.uploadFile(filePath);
     await page.waitForSelector('#_file_uploaded_photo_ensemble0') ; 
-    await page.screenshot({path: 'step5.png'});
+    await page.screenshot({path: 'file' + iFile + '-step5.png'});
     await Promise.all([
       page.waitForNavigation({timeout: timeoutLoad}),
       page.click('button[name="action_validate_finalisation"]')
@@ -127,12 +133,20 @@ const logger = winston.createLogger(
     logger.log('info', 'Fifth step (validate picture) completed.', {filepath: filepath} ) ;
 
     // Sixth step : finalize
-    await page.screenshot({path: 'step6.png'});
+    await page.screenshot({path: 'file' + iFile + '-step6.png'});
     await Promise.all([
       page.waitForNavigation({timeout: timeoutLoad}),
       page.click('button[name="action_validate_signalement"]')
     ]) ;
     logger.log('info', 'Sixth step (finalize) completed.' ) ;
+    // Go the next file
+    iFile++ ; 
+    }
+    catch (e)
+    {
+      logger.log('error', "A promise has been rejected.", {exception: e}) ; 
+      await page.screenshot({path: 'file' + iFile + '-promiseRejected.png'});
+    }
   }
 
   // Close everything  
