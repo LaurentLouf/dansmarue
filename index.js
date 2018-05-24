@@ -1,4 +1,27 @@
 const puppeteer = require('puppeteer');
+const winston   = require('winston') ;
+
+// Create a custom formatter : add a timestamp and pretty print the data
+const MESSAGE = Symbol.for('message');
+const jsonFormatter = (logEntry) => 
+{
+  const base = { timestamp: new Date() };
+  const json = Object.assign(base, logEntry)
+  logEntry[MESSAGE] = JSON.stringify(json, null, 2);
+  return logEntry;
+}
+
+// Initialize a logger
+const logger = winston.createLogger(
+{
+  format: winston.format(jsonFormatter)(),
+  transports: [
+    new winston.transports.File({ filename: '/home/parisenselle/processAdhesion/logs/error.log', level: 'error', eol: "\n\n" }),
+    new winston.transports.File({ filename: '/home/parisenselle/processAdhesion/logs/info.log',  level: 'info',  eol: "\n\n" }),
+    new winston.transports.File({ filename: '/home/parisenselle/processAdhesion/logs/debug.log', level: 'debug', eol: "\n\n" }),
+    new winston.transports.Console()
+  ]
+});
 
 (async () => 
 {
@@ -25,6 +48,7 @@ const puppeteer = require('puppeteer');
 
     // If it loaded, it means the authentication went well
     loggedIn = true ; 
+    logger.log('info', 'Successfully logged in.' ) ;
 
   } catch ( e )
   {
@@ -41,6 +65,7 @@ const puppeteer = require('puppeteer');
     await page.screenshot({path: 'step1.png'});
     await page.click('button[name="action_validate_declaration"]') ;
     await promiseStep ; 
+    logger.log('info', 'First step (validate declaration) completed.' ) ;
 
     
     // Second step : fill the address. Use first recommendation from the interface
@@ -53,6 +78,7 @@ const puppeteer = require('puppeteer');
     await page.screenshot({path: 'step2.png'});
     await page.click('button[name="action_validate_address"]') ; 
     await promiseStep ; 
+    logger.log('info', 'Second step (validate address) completed.' ) ;
 
     
     // Third step : just continue to next step
@@ -60,6 +86,7 @@ const puppeteer = require('puppeteer');
     await page.screenshot({path: 'step3.png'});
     await page.click('button[name="action_validate_doublons"]') ;
     await promiseStep ;
+    logger.log('info', 'Third step (validate duplicates) completed.' ) ;
 
 
     // Fourth step : indicate reason
@@ -72,6 +99,7 @@ const puppeteer = require('puppeteer');
     await page.screenshot({path: 'step4.png'});
     await page.click('button[name="action_validate_categorie"]') ;
     await promiseStep ;
+    logger.log('info', 'Fourth step (validate category) completed.' ) ;
   }
 
   // Close everything  

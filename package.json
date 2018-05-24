@@ -13,6 +13,7 @@
   "author": "Laurent Louf",
   "license": "Beerware",
   "dependencies": {
-    "puppeteer": "1.4.0"
+    "puppeteer": "1.4.0",
+    "winston": "3.0.0-rc0"
   }
 }
