@@ -113,6 +113,14 @@ const logger = winston.createLogger(
     await page.click('button[name="action_validate_finalisation"]') ; 
     await promiseStep ;
     logger.log('info', 'Fifth step (validate picture) completed.' ) ;
+
+
+    // Sixth step : finalize
+    await page.screenshot({path: 'step6.png'});
+    promiseStep = page.waitForNavigation({timeout: 10000}) ; 
+    await page.click('button[name="action_validate_signalement"]') ;
+    await promiseStep ;
+    logger.log('info', 'Sixth step (finalize) completed.' ) ;
   }
 
   // Close everything  
