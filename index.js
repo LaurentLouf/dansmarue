@@ -26,8 +26,9 @@ const logger = winston.createLogger(
 
 (async () => 
 {
-  var loggedIn = false ;
-  var login = '', password = '' ;
+  var loggedIn    = false ;
+  var login       = '', password = '' ;
+  var timeoutLoad = 20000 ; 
 
   // Launch browser in slow mo, create page with desktop viewport and log console outputs
   const browser = await puppeteer.launch({slowMo: 100});
@@ -40,12 +41,13 @@ const logger = winston.createLogger(
   {
     await page.goto('https://moncompte.paris.fr/moncompte/jsp/site/Portal.jsp?page=myluteceusergu&view=createAccountModal') ;
     
-    // Create a promise to wait for execution first : if done after the click, the page may already have changed ("navigation" finished) before the promise creation, which means we would wait for another "navigation" that will never occur, since we won't navigate further after login
-    var promiseLogin = page.waitForNavigation({timeout: 10000}) ; 
+    // Create a promise to wait for execution first : if done after the click, the page may already have changed ("navigation" finished) before the promise creation, which means we would wait for another "navigation" that will never occur, since we won't navigate further after login 
     await page.type('#username-login', login, {delay: Math.floor( Math.random()*50 + 25 ) } ) ;
     await page.type('#password-login', password, {delay: Math.floor( Math.random()*50 + 25 ) } ) ;     
-    await page.click('button[name="Submit"]') ; 
-    await promiseLogin ; 
+    await Promise.all([
+      page.waitForNavigation({timeout: timeoutLoad}),
+      page.click('button[name="Submit"]') 
+    ]) ; 
 
     // If it loaded, it means the authentication went well
     loggedIn = true ; 
@@ -63,9 +65,10 @@ const logger = winston.createLogger(
     
     // First step : just continue to next step
     await page.screenshot({path: 'step1.png'});
-    var promiseStep = page.waitForNavigation({timeout: 10000}) ; 
-    await page.click('button[name="action_validate_declaration"]') ;
-    await promiseStep ; 
+    await Promise.all([
+      page.waitForNavigation({timeout: timeoutLoad}),
+      page.click('button[name="action_validate_declaration"]')
+    ]) ; 
     logger.log('info', 'First step (validate declaration) completed.' ) ;
 
     
@@ -76,17 +79,19 @@ const logger = winston.createLogger(
     await page.waitForSelector("ul.ui-autocomplete", {visible:true, timeout: 3000}) ;
     await page.click('ul.ui-autocomplete li a') ; 
     await page.screenshot({path: 'step2.png'});
-    promiseStep = page.waitForNavigation({timeout: 10000}) ;
-    await page.click('button[name="action_validate_address"]') ; 
-    await promiseStep ; 
+    await Promise.all([
+      page.waitForNavigation({timeout: timeoutLoad}),
+      page.click('button[name="action_validate_address"]')
+    ]);
     logger.log('info', 'Second step (validate address) completed.' ) ;
 
     
     // Third step : just continue to next step
     await page.screenshot({path: 'step3.png'});
-    promiseStep = page.waitForNavigation({timeout: 10000}) ; 
-    await page.click('button[name="action_validate_doublons"]') ;
-    await promiseStep ;
+    await Promise.all([
+      page.waitForNavigation({timeout: timeoutLoad}),
+      page.click('button[name="action_validate_doublons"]')
+    ]) ;
     logger.log('info', 'Third step (validate duplicates) completed.' ) ;
 
 
@@ -97,9 +102,10 @@ const logger = winston.createLogger(
     await page.waitForSelector("ul.ui-autocomplete", {visible:true, timeout: 3000}) ;
     await page.click('ul.ui-autocomplete li a') ; 
     await page.screenshot({path: 'step4.png'});
-    promiseStep = page.waitForNavigation({timeout: 10000}) ; 
-    await page.click('button[name="action_validate_categorie"]') ;
-    await promiseStep ;
+    await Promise.all([
+      page.waitForNavigation({timeout: timeoutLoad}),
+      page.click('button[name="action_validate_categorie"]')
+    ]) ;
     logger.log('info', 'Fourth step (validate category) completed.' ) ;
 
 
@@ -110,17 +116,18 @@ const logger = winston.createLogger(
     await input.uploadFile(filePath);
     await page.waitForSelector('#_file_uploaded_photo_ensemble0') ; 
     await page.screenshot({path: 'step5.png'});
-    promiseStep     = page.waitForNavigation({timeout: 10000}) ; 
-    await page.click('button[name="action_validate_finalisation"]') ; 
-    await promiseStep ;
-    logger.log('info', 'Fifth step (validate picture) completed.' ) ;
-
+    await Promise.all([
+      page.waitForNavigation({timeout: timeoutLoad}),
+      page.click('button[name="action_validate_finalisation"]')
+    ]) ;
+    logger.log('info', 'Fifth step (validate picture) completed.', {filepath: filepath} ) ;
 
     // Sixth step : finalize
     await page.screenshot({path: 'step6.png'});
-    promiseStep = page.waitForNavigation({timeout: 10000}) ; 
-    await page.click('button[name="action_validate_signalement"]') ;
-    await promiseStep ;
+    await Promise.all([
+      page.waitForNavigation({timeout: timeoutLoad}),
+      page.click('button[name="action_validate_signalement"]')
+    ]) ;
     logger.log('info', 'Sixth step (finalize) completed.' ) ;
   }
 
