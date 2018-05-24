@@ -60,6 +60,18 @@ const puppeteer = require('puppeteer');
     await page.screenshot({path: 'step3.png'});
     await page.click('button[name="action_validate_doublons"]') ;
     await promiseStep ;
+
+
+    // Fourth step : indicate reason
+    promiseStep = page.waitForNavigation({timeout: 10000}) ; 
+    await page.focus('input[name="typeSignalement"]') ;
+    await page.keyboard.type('stationnement gênant') ;
+    // Wait for autocomplete suggestions then click on the first one
+    await page.waitForSelector("ul.ui-autocomplete", {visible:true, timeout: 3000}) ;
+    await page.click('ul.ui-autocomplete li a') ; 
+    await page.screenshot({path: 'step4.png'});
+    await page.click('button[name="action_validate_categorie"]') ;
+    await promiseStep ;
   }
 
   // Close everything  
