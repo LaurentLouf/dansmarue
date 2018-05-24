@@ -100,6 +100,19 @@ const logger = winston.createLogger(
     await page.click('button[name="action_validate_categorie"]') ;
     await promiseStep ;
     logger.log('info', 'Fourth step (validate category) completed.' ) ;
+
+
+    // Fifth step : upload the photo
+    const filePath  = path.relative(process.cwd(), __dirname + '/images/image.png');
+    const input     = await page.$('#photo_ensemble');
+    await page.evaluate( () => { $('#photo_ensemble').click(); } ) ; 
+    await input.uploadFile(filePath);
+    await page.waitForSelector('#_file_uploaded_photo_ensemble0') ; 
+    await page.screenshot({path: 'step5.png'});
+    promiseStep     = page.waitForNavigation({timeout: 10000}) ; 
+    await page.click('button[name="action_validate_finalisation"]') ; 
+    await promiseStep ;
+    logger.log('info', 'Fifth step (validate picture) completed.' ) ;
   }
 
   // Close everything  
