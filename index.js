@@ -35,6 +35,12 @@ const puppeteer = require('puppeteer');
   if ( loggedIn )
   {
     await page.goto('https://teleservices.paris.fr/dansmarue/');
+    
+    // First step : just continue to next step
+    var promiseStep = page.waitForNavigation({timeout: 10000}) ; 
+    await page.screenshot({path: 'step1.png'});
+    await page.click('button[name="action_validate_declaration"]') ;
+    await promiseStep ; 
   }
 
   // Close everything  
