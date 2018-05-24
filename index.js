@@ -36,9 +36,11 @@ const logger = winston.createLogger(
   await page.setViewport({width:1920, height:1080}) ;
   page.on('console', msg => console.log('PAGE LOG:', msg.text() ) );
   
-  // Go to the website
-  try 
+  // Authenticate
+  while ( loggedIn == false )
   {
+    try 
+    {
     await page.goto('https://moncompte.paris.fr/moncompte/jsp/site/Portal.jsp?page=myluteceusergu&view=createAccountModal') ;
     
     // Create a promise to wait for execution first : if done after the click, the page may already have changed ("navigation" finished) before the promise creation, which means we would wait for another "navigation" that will never occur, since we won't navigate further after login 
@@ -53,10 +55,12 @@ const logger = winston.createLogger(
     loggedIn = true ; 
     logger.log('info', 'Successfully logged in.' ) ;
 
-  } catch ( e )
-  {
-    console.log("A promise has been rejected. It may mean that the login information are wrong if it has been rejected because of a timeout. See the message below and screenshot of the page in the file promiseRejected.png.\n" + e) ; 
-    await page.screenshot({path: 'promiseRejected.png'});
+    } 
+    catch ( e )
+    {
+    logger.log('error', "A promise has been rejected. It may mean that the login information are wrong if it has been rejected because of a timeout.", {exception: e}) ; 
+    await page.screenshot({path: 'login-promiseRejected.png'});
+    }
   }
 
   if ( loggedIn )
