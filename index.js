@@ -42,8 +42,8 @@ const logger = winston.createLogger(
     
     // Create a promise to wait for execution first : if done after the click, the page may already have changed ("navigation" finished) before the promise creation, which means we would wait for another "navigation" that will never occur, since we won't navigate further after login
     var promiseLogin = page.waitForNavigation({timeout: 10000}) ; 
-    await page.type('#username-login', login) ;
-    await page.type('#password-login', password) ;     
+    await page.type('#username-login', login, {delay: Math.floor( Math.random()*50 + 25 ) } ) ;
+    await page.type('#password-login', password, {delay: Math.floor( Math.random()*50 + 25 ) } ) ;     
     await page.click('button[name="Submit"]') ; 
     await promiseLogin ; 
 
@@ -71,7 +71,7 @@ const logger = winston.createLogger(
     
     // Second step : fill the address. Use first recommendation from the interface
     await page.focus('#adresse') ; 
-    await page.keyboard.type("4 rue Lobau") ;
+    await page.keyboard.type("4 rue Lobau", {delay: Math.floor( Math.random()*50 + 25 ) } ) ;
     // Wait for autocomplete suggestions then click on the first one
     await page.waitForSelector("ul.ui-autocomplete", {visible:true, timeout: 3000}) ;
     await page.click('ul.ui-autocomplete li a') ; 
@@ -92,7 +92,7 @@ const logger = winston.createLogger(
 
     // Fourth step : indicate reason
     await page.focus('input[name="typeSignalement"]') ;
-    await page.keyboard.type('stationnement gênant') ;
+    await page.keyboard.type('stationnement gênant', {delay: Math.floor( Math.random()*50 + 25 ) } ) ;
     // Wait for autocomplete suggestions then click on the first one
     await page.waitForSelector("ul.ui-autocomplete", {visible:true, timeout: 3000}) ;
     await page.click('ul.ui-autocomplete li a') ; 
