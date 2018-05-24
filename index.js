@@ -132,6 +132,8 @@ const logger = winston.createLogger(
     ]) ;
     logger.log('info', 'Fifth step (validate picture) completed.', {filepath: filepath} ) ;
 
+    if ( process.argv[2] != "test" )
+    {
     // Sixth step : finalize
     await page.screenshot({path: 'file' + iFile + '-step6.png'});
     await Promise.all([
@@ -139,6 +141,8 @@ const logger = winston.createLogger(
       page.click('button[name="action_validate_signalement"]')
     ]) ;
     logger.log('info', 'Sixth step (finalize) completed.' ) ;
+    }
+    
     // Go the next file
     iFile++ ; 
     }
