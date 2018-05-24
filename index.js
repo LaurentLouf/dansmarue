@@ -41,6 +41,18 @@ const puppeteer = require('puppeteer');
     await page.screenshot({path: 'step1.png'});
     await page.click('button[name="action_validate_declaration"]') ;
     await promiseStep ; 
+
+    
+    // Second step : fill the address. Use first recommendation from the interface
+    promiseStep = page.waitForNavigation({timeout: 10000}) ;
+    await page.focus('#adresse') ; 
+    await page.keyboard.type("4 rue Lobau") ;
+    // Wait for autocomplete suggestions then click on the first one
+    await page.waitForSelector("ul.ui-autocomplete", {visible:true, timeout: 3000}) ;
+    await page.click('ul.ui-autocomplete li a') ; 
+    await page.screenshot({path: 'step2.png'});
+    await page.click('button[name="action_validate_address"]') ; 
+    await promiseStep ; 
   }
 
   // Close everything  
