@@ -130,7 +130,7 @@ const logger = winston.createLogger(
         page.waitForNavigation({timeout: timeoutLoad}),
         page.click('button[name="action_validate_finalisation"]')
       ]) ;
-      logger.log('info', 'Fifth step (validate picture) completed.', {filepath: filepath} ) ;
+      logger.log('info', 'Fifth step (validate picture) completed.', {filepath: filePath} ) ;
 
       if ( process.argv[2] != "test" )
       {
