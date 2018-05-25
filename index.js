@@ -69,6 +69,13 @@ const logger = winston.createLogger(
   
   while ( iFile != files.length )
   {
+    var extension = path.extname(files[iFile]).toLowerCase() ;
+    if ( extension != ".png" && extension != ".jpg" && extension != ".gif" && extension != ".tiff" )
+    {
+      iFile++ ; 
+      continue ; 
+    }
+
     try 
     {
       await page.goto('https://teleservices.paris.fr/dansmarue/');
