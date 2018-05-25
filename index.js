@@ -141,6 +141,9 @@ const logger = winston.createLogger(
           page.click('button[name="action_validate_signalement"]')
         ]) ;
         logger.log('info', 'Sixth step (finalize) completed.' ) ;
+
+        // Delete file from the directory to avoid manual cleanup
+        fs.unlinkSync(filePath) ;
       }
       
       // Go the next file
