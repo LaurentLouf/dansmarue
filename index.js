@@ -59,7 +59,7 @@ const logger = winston.createLogger(
     catch ( e )
     {
       logger.log('error', "A promise has been rejected. It may mean that the login information are wrong if it has been rejected because of a timeout.", {exception: e}) ; 
-      await page.screenshot({path: 'login-promiseRejected.png'});
+      await page.screenshot({path: path.join('logs', 'login-promiseRejected.png') } ) ;
     }
   }
 
@@ -74,7 +74,7 @@ const logger = winston.createLogger(
       await page.goto('https://teleservices.paris.fr/dansmarue/');
       
       // First step : just continue to next step
-      await page.screenshot({path: 'file' + iFile + '-step1.png'});
+      await page.screenshot({path: path.join('logs', 'file' + iFile + '-step1.png') } ) ;
       await Promise.all([
         page.waitForNavigation({timeout: timeoutLoad}),
         page.click('button[name="action_validate_declaration"]')
@@ -88,7 +88,7 @@ const logger = winston.createLogger(
       // Wait for autocomplete suggestions then click on the first one
       await page.waitForSelector("ul.ui-autocomplete", {visible:true, timeout: 3000}) ;
       await page.click('ul.ui-autocomplete li a') ; 
-      await page.screenshot({path: 'file' + iFile + '-step2.png'});
+      await page.screenshot({path: path.join('logs', 'file' + iFile + '-step2.png') } ) ;
       await Promise.all([
         page.waitForNavigation({timeout: timeoutLoad}),
         page.click('button[name="action_validate_address"]')
@@ -97,7 +97,7 @@ const logger = winston.createLogger(
 
       
       // Third step : just continue to next step
-      await page.screenshot({path: 'file' + iFile + '-step3.png'});
+      await page.screenshot({path: path.join('logs', 'file' + iFile + '-step3.png') } ) ;
       await Promise.all([
         page.waitForNavigation({timeout: timeoutLoad}),
         page.click('button[name="action_validate_doublons"]')
@@ -111,7 +111,7 @@ const logger = winston.createLogger(
       // Wait for autocomplete suggestions then click on the first one
       await page.waitForSelector("ul.ui-autocomplete", {visible:true, timeout: 3000}) ;
       await page.click('ul.ui-autocomplete li a') ; 
-      await page.screenshot({path: 'file' + iFile + '-step4.png'});
+      await page.screenshot({path: path.join('logs', 'file' + iFile + '-step4.png') } ) ;
       await Promise.all([
         page.waitForNavigation({timeout: timeoutLoad}),
         page.click('button[name="action_validate_categorie"]')
@@ -125,7 +125,7 @@ const logger = winston.createLogger(
       await page.evaluate( () => { $('#photo_ensemble').click(); } ) ; 
       await input.uploadFile(filePath);
       await page.waitForSelector('#_file_uploaded_photo_ensemble0') ; 
-      await page.screenshot({path: 'file' + iFile + '-step5.png'});
+      await page.screenshot({path: path.join('logs', 'file' + iFile + '-step5.png') } ) ;
       await Promise.all([
         page.waitForNavigation({timeout: timeoutLoad}),
         page.click('button[name="action_validate_finalisation"]')
@@ -135,7 +135,7 @@ const logger = winston.createLogger(
       if ( process.argv[2] != "test" )
       {
         // Sixth step : finalize
-        await page.screenshot({path: 'file' + iFile + '-step6.png'});
+        await page.screenshot({path: path.join('logs', 'file' + iFile + '-step6.png') } ) ;
         await Promise.all([
           page.waitForNavigation({timeout: timeoutLoad}),
           page.click('button[name="action_validate_signalement"]')
@@ -152,7 +152,7 @@ const logger = winston.createLogger(
     catch (e)
     {
       logger.log('error', "A promise has been rejected.", {exception: e}) ; 
-      await page.screenshot({path: 'file' + iFile + '-promiseRejected.png'});
+      await page.screenshot({path: path.join('logs', 'file' + iFile + '-promiseRejected.png') } ) ;
     }
   }
   
